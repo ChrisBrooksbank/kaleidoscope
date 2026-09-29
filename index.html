@@ -506,6 +506,9 @@ addEventListener('keydown',e=>{
   else if(k==='m')$('#t-sound').click();
 });
 addEventListener('resize',()=>{resize();});
+document.addEventListener('fullscreenchange',()=>{const fs=!!document.fullscreenElement;
+  S.uiHidden=fs;document.body.classList.toggle('uihidden',fs);
+  if(fs){$('#panel').classList.remove('open');$('#b-panel').classList.remove('on');toast('Esc to exit · H or double-tap for controls');}});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S.show)lock(true);});
 
 /* ---------- main loop ---------- */
