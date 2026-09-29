@@ -508,6 +508,8 @@ addEventListener('keydown',e=>{
 addEventListener('resize',()=>{resize();});
 document.addEventListener('fullscreenchange',()=>{const fs=!!document.fullscreenElement;
   S.uiHidden=fs;document.body.classList.toggle('uihidden',fs);
+  if(fs){S.lensBefore=S.lens;S.lens=false;}else if(S.lensBefore!==undefined){S.lens=S.lensBefore;S.lensBefore=undefined;}
+  $('#t-lens').classList.toggle('on',S.lens);crossfade(600);
   if(fs){$('#panel').classList.remove('open');$('#b-panel').classList.remove('on');toast('Esc to exit · H or double-tap for controls');}});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S.show)lock(true);});
 
