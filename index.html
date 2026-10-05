@@ -110,11 +110,11 @@
 </div>
 
 <div id="panel" class="ui">
-  <div class="row"><label>Mirrors</label><input type="range" id="r-n" min="4" max="32" step="2"><output id="o-n"></output></div>
-  <div class="row"><label>Brush size</label><input type="range" id="r-size" min="6" max="90"><output id="o-size"></output></div>
-  <div class="row"><label>Trails</label><input type="range" id="r-trail" min="0" max="100"><output id="o-trail"></output></div>
-  <div class="row"><label>Spin</label><input type="range" id="r-spin" min="-100" max="100"><output id="o-spin"></output></div>
-  <div class="row"><label>Photo zoom</label><input type="range" id="r-zoom" min="40" max="240"><output id="o-zoom"></output></div>
+  <div class="row"><label for="r-n">Mirrors</label><input type="range" id="r-n" min="4" max="32" step="2"><output id="o-n"></output></div>
+  <div class="row"><label for="r-size">Brush size</label><input type="range" id="r-size" min="6" max="90"><output id="o-size"></output></div>
+  <div class="row"><label for="r-trail">Trails</label><input type="range" id="r-trail" min="0" max="100"><output id="o-trail"></output></div>
+  <div class="row"><label for="r-spin">Spin</label><input type="range" id="r-spin" min="-100" max="100"><output id="o-spin"></output></div>
+  <div class="row"><label for="r-zoom">Photo zoom</label><input type="range" id="r-zoom" min="40" max="240"><output id="o-zoom"></output></div>
   <div class="chips" id="pals"><span class="h">COLOURS</span></div>
   <div class="chips" id="brushes"><span class="h">BRUSH</span></div>
   <div class="toggles">
@@ -267,7 +267,7 @@ function updFlow(dt){
     g.m+=dt*.05;const sp=1+.35*Math.sin(g.m*3+i);
     for(let k=0;k<4;k++)g.p[k]+=g.f[k]*sp*dt*(k%2?1.3:1);
     let x=A*(.85*Math.sin(g.p[0])+.5*Math.sin(g.p[1]+g.m)),y=A*(.85*Math.sin(g.p[2])+.5*Math.sin(g.p[3]-g.m));
-    if(ptr){const px=ptr.x-W/2,py=ptr.y-H/2;x+=(px-x)*attract*(.4+.3*i);y+=(py-y)*attract*(.4+.3*i);}
+    if(ptr){const [px,py]=rel(ptr.x,ptr.y);x+=(px-x)*attract*(.4+.3*i);y+=(py-y)*attract*(.4+.3*i);}
     const size=S.size*(.65+.45*Math.sin(g.m*5+i*2));
     strokeTo(g.br,x,y,size);
     g.sndT-=dt;if(g.sndT<0){g.sndT=rand(1.2,2.6);Snd.note(Math.hypot(x,y)/Rv(),.05);}
@@ -315,7 +315,7 @@ function newGem(x,y){
 function initGems(){gems.length=0;for(let i=0;i<34;i++)gems.push(newGem());}
 function updGems(dt){
   const w=TAU/S.n,rv=Rv(),ga=Math.PI/2-viewRot+.6*Math.sin(time*.3),gx=Math.cos(ga)*170,gy=Math.sin(ga)*170;
-  const pulls=[];for(const p of ptrs.values())if(p.down&&!p.turn){const f=fold(p.x-W/2,p.y-H/2);pulls.push(f);}
+  const pulls=[];for(const p of ptrs.values())if(p.down&&!p.turn){const [dx,dy]=rel(p.x,p.y);pulls.push(fold(dx,dy));}
   for(let i=0;i<gems.length;i++)for(let j=i+1;j<gems.length;j++){
     const a=gems[i],b=gems[j],dx=b.x-a.x,dy=b.y-a.y,rr=(a.size+b.size)*.6,d2=dx*dx+dy*dy;
     if(d2<rr*rr&&d2>.01){
@@ -384,13 +384,17 @@ function stopCam(){
   if(photo.el&&photo.el.tagName==='VIDEO'){photo.el=null;photo.user=false;photo.mirror=false;}
   $('#t-cam').classList.remove('on');
 }
+let camBusy=false;
 async function toggleCam(){
+  if(camBusy)return;
   if(photo.cam){stopCam();if(S.mode==='photo'){photo.el=makeSample();}toast('📷 Camera off');return;}
+  camBusy=true;
   try{
     const st=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:1280}},audio:false});
     const v=document.createElement('video');v.srcObject=st;v.muted=true;v.playsInline=true;await v.play();
     photo.el=v;photo.cam=st;photo.user=true;photo.mirror=true;$('#t-cam').classList.add('on');setMode('photo',{silent:true});toast('📷 You are the kaleidoscope!');
   }catch(e){toast('Camera not available');}
+  finally{camBusy=false;}
 }
 function loadFile(f){
   if(!f||!f.type.startsWith('image/')){toast('Please choose an image');return;}
@@ -680,7 +684,7 @@ cv.addEventListener('dblclick',unhide);
 addEventListener('keydown',e=>{
   if(e.ctrlKey||e.metaKey||e.altKey)return;
   if(e.target.tagName==='INPUT'&&e.key.startsWith('Arrow'))return;
-  const k=e.key.toLowerCase();if(e.repeat&&!k.startsWith('arrow'))return;wake();
+  const k=e.key.toLowerCase();if(e.repeat&&!k.startsWith('arrow'))return;wake();hideHint();
   if(k==='h'){S.uiHidden=!S.uiHidden;document.body.classList.toggle('uihidden',S.uiHidden);}
   else if(k>='1'&&k<='5'){if(S.show)setShow(false);setMode(['tumble','paint','flow','bloom','photo'][+k-1]);}
   else if(k==='v')toggleRec();else if(k==='g')$('#t-guide').click();else if(k==='t')cycleSleep();
@@ -692,11 +696,12 @@ addEventListener('keydown',e=>{
   else if(k==='m')$('#t-sound').click();
 });
 addEventListener('resize',()=>{resize();});
-document.addEventListener('fullscreenchange',()=>{const fs=!!document.fullscreenElement;
+const onFull=()=>{const fs=!!(document.fullscreenElement||document.webkitFullscreenElement);
   S.uiHidden=fs;document.body.classList.toggle('uihidden',fs);
   if(fs){S.lensBefore=S.lens;S.lens=false;}else if(S.lensBefore!==undefined){S.lens=S.lensBefore;S.lensBefore=undefined;}
   $('#t-lens').classList.toggle('on',S.lens);crossfade(600);
-  if(fs){$('#panel').classList.remove('open');$('#b-panel').classList.remove('on');toast('Esc to exit · H or double-tap for controls');}});
+  if(fs){$('#panel').classList.remove('open');$('#b-panel').classList.remove('on');toast('Esc to exit · H or double-tap for controls');}};
+document.addEventListener('fullscreenchange',onFull);document.addEventListener('webkitfullscreenchange',onFull);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S.show)lock(true);});
 
 /* ---------- main loop ---------- */
