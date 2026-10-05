@@ -31,11 +31,10 @@
   @keyframes recp{50%{box-shadow:0 0 0 6px rgba(193,18,31,.35)}}
   body.sleeping .ui,body.sleeping #toast{opacity:0!important;pointer-events:none}
   #vig{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 55%,rgba(20,8,0,.55) 100%)}
-  body.idle{cursor:none} body.idle #c{cursor:none}
+  body.idle{cursor:none} body.idle #c{cursor:none!important}
 
   .ui{transition:opacity .6s ease,transform .6s ease}
   body.idle .ui,body.uihidden .ui{opacity:0;pointer-events:none}
-  body.uihidden #reveal{opacity:.0}
 
   #dock{position:fixed;left:50%;bottom:max(14px,env(safe-area-inset-bottom));transform:translateX(-50%);
     display:flex;gap:8px;padding:8px;border-radius:26px;background:var(--glass);border:2px solid var(--line);
@@ -131,11 +130,11 @@
   </div>
   <input type="file" id="file" accept="image/*" hidden>
   <div class="help">
-    Draw with mouse, finger — or several fingers at once. In <b>Tumble</b> hold to attract the gems; in <b>Bloom</b> tap to plant flowers;
+    Draw with mouse, finger — or several fingers at once. In <b>Beads</b> hold to attract the gems; in <b>Bloom</b> tap to plant flowers;
     in <b>Flow</b> ghost painters swirl by themselves and lean toward your pointer.<br>
     <b>Twist the brass ring</b> (or Shift-drag) to turn the tube — flick it to spin. Drop a photo anywhere to mirror it.<br>
     <kbd>1</kbd>–<kbd>5</kbd> modes · <kbd>Z</kbd> zen show · <kbd>←</kbd><kbd>→</kbd>/wheel mirrors · <kbd>↑</kbd><kbd>↓</kbd> brush ·
-    <kbd>P</kbd> colours · <kbd>B</kbd> brush · <kbd>R</kbd> surprise · <kbd>S</kbd> save · <kbd>V</kbd> record · <kbd>G</kbd> breath guide · <kbd>T</kbd> sleep timer · <kbd>H</kbd> hide controls
+    <kbd>P</kbd> colours · <kbd>B</kbd> brush · <kbd>R</kbd> surprise · <kbd>S</kbd> save · <kbd>V</kbd> record · <kbd>M</kbd> sound · <kbd>G</kbd> breath guide · <kbd>T</kbd> sleep timer · <kbd>H</kbd> hide controls
   </div>
 </div>
 
@@ -396,8 +395,8 @@ async function toggleCam(){
 function loadFile(f){
   if(!f||!f.type.startsWith('image/')){toast('Please choose an image');return;}
   const img=new Image(),url=URL.createObjectURL(f);
-  img.onload=()=>{stopCam();photo.el=img;photo.user=true;photo.mirror=false;panX=panY=0;setMode('photo',{silent:true,force:true});toast('🖼️ Photo loaded');};
-  img.onerror=()=>toast('Could not read that image');img.src=url;
+  img.onload=()=>{URL.revokeObjectURL(url);stopCam();photo.el=img;photo.user=true;photo.mirror=false;panX=panY=0;setMode('photo',{silent:true,force:true});toast('🖼️ Photo loaded');};
+  img.onerror=()=>{URL.revokeObjectURL(url);toast('Could not read that image');};img.src=url;
 }
 
 /* ---------- render ---------- */
@@ -471,12 +470,13 @@ function crossfade(ms){
 }
 
 /* ---------- input ---------- */
-const ptrs=new Map();let lastMoveT=-99,lastBloomT=0,lastPid=null;
+const ptrs=new Map();let lastMoveT=-99,lastBloomT=0,lastPid=null;let lastTap={t:0,x:0,y:0};
 const lastPointer=()=>ptrs.get(lastPid)||[...ptrs.values()].pop();
 const rel=(x,y)=>[(x-W/2)/viewScale,(y-H/2)/viewScale];
 const ringR=()=>Math.min(W,H)*.48;
 cv.addEventListener('pointerdown',e=>{
   cv.setPointerCapture(e.pointerId);hideHint();wake();
+  if(S.uiHidden&&e.pointerType!=='mouse'){if(e.timeStamp-lastTap.t<350&&Math.hypot(e.clientX-lastTap.x,e.clientY-lastTap.y)<40)unhide();lastTap={t:e.timeStamp,x:e.clientX,y:e.clientY};}
   const p={x:e.clientX,y:e.clientY,down:true,br:newBrush(),turn:false,av:0};ptrs.set(e.pointerId,p);lastPid=e.pointerId;lastMoveT=time;
   const sx=e.clientX-W/2,sy=e.clientY-H/2;
   if((S.lens&&Math.hypot(sx,sy)>ringR())||e.shiftKey||e.button===2){
@@ -496,7 +496,9 @@ cv.addEventListener('pointermove',e=>{
     const dtm=Math.max(.008,(e.timeStamp-p.lt)/1000);p.lt=e.timeStamp;p.av+=(d/dtm-p.av)*.4;
     turnAcc+=Math.abs(d);if(turnAcc>.16){turnAcc=0;Snd.click();}return;
   }
-  if(S.mode==='photo'){panX+=(p.x-ox)/viewScale;panY+=(p.y-oy)/viewScale;return;}
+  if(S.mode==='photo'){ // drag the picture, but never so far it leaves the middle of the tube empty
+    panX+=(p.x-ox)/viewScale;panY+=(p.y-oy)/viewScale;
+    const lim=Rv()*.65*S.zoom/100*.5,d=Math.hypot(panX,panY);if(d>lim){panX*=lim/d;panY*=lim/d;}return;}
   const [dx,dy]=rel(p.x,p.y);
   if(S.mode==='paint'||S.mode==='flow')strokeTo(p.br,dx,dy,S.size);
   else if(S.mode==='bloom'&&time-lastBloomT>.09){lastBloomT=time;spawnBloom(dx,dy,false);}
@@ -509,7 +511,9 @@ const up=e=>{
 cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
 cv.addEventListener('pointerleave',e=>{if(e.pointerType==='mouse'&&!ptrs.get(e.pointerId)?.down)ptrs.delete(e.pointerId);});
 cv.addEventListener('contextmenu',e=>e.preventDefault());
-cv.addEventListener('wheel',e=>{e.preventDefault();setN(S.n+(e.deltaY<0?2:-2),true);},{passive:false});
+let wheelAcc=0;
+cv.addEventListener('wheel',e=>{e.preventDefault();wheelAcc+=e.deltaMode?e.deltaY*40:e.deltaY;
+  if(Math.abs(wheelAcc)>=80){setN(S.n+(wheelAcc<0?2:-2),true);wheelAcc=0;}},{passive:false});
 
 /* ---------- audio ---------- */
 const CH=[[0,0],[9,1],[5,0],[7,0]];   // D, Bm, G, A — [semitones above D, minor?]
@@ -575,7 +579,7 @@ function setMode(m,o={}){
   if(old==='photo'&&m!=='photo')stopCam();
   S.mode=m;const M=MODES[m];
   if(m==='photo'&&!photo.el)photo.el=makeSample();if(!o.keepTrail){setTrail(M.trail);}
-  if(!keep)clearSrc();
+  if(!keep&&!o.keepSrc)clearSrc();
   if(m==='tumble')initGems();if(m==='flow')initGhosts();if(m==='bloom'){blooms.length=0;bloomT=0;}
   document.querySelectorAll('#dock [data-mode]').forEach(b=>b.classList.toggle('on',b.dataset.mode===m));
   if(!o.silent)toast(m==='photo'&&!photo.user?'Photo · drop a picture here, or open Tweak':M.name);
@@ -589,7 +593,7 @@ function nextScene(){
   const m=pick(['flow','bloom','tumble','flow'].concat(photo.user?['photo']:[]).filter(x=>x!==S.mode));
   crossfade(2800);setMode(m,{ms:2800,silent:true});
   setN(pick([6,8,8,10,12,14,16,20]));setPal(S.pal+1+Math.floor(rand(0,PALS.length-1)));
-  setBrush(Math.floor(rand(0,BRUSHES.length)));setSpin(Math.round(rand(-30,30)||6));setSize(Math.round(rand(20,44)));
+  setBrush(Math.floor(rand(0,BRUSHES.length)));setSpin(Math.round(rand(-30,30))||6);setSize(Math.round(rand(20,44)));
   showT=rand(24,42);toast(MODES[m].name+' · '+PALS[S.pal].name);
   if(Snd.on)Snd.nextChord();
 }
@@ -628,7 +632,7 @@ $('#b-panel').onclick=()=>{const o=$('#panel').classList.toggle('open');$('#b-pa
 $('#b-rand').onclick=surprise;
 $('#b-clear').onclick=()=>{crossfade(500);clearSrc();if(S.mode==='tumble')initGems();blooms.length=0;};
 $('#b-full').onclick=toggleFull;
-$('#b-hide').onclick=()=>{S.uiHidden=true;document.body.classList.add('uihidden');toast('Press H or tap to bring controls back');};
+$('#b-hide').onclick=()=>{S.uiHidden=true;document.body.classList.add('uihidden');toast('Press H or double-tap to bring controls back');};
 $('#t-lens').onclick=e=>{S.lens=!S.lens;e.currentTarget.classList.toggle('on',S.lens);};
 $('#t-breathe').onclick=e=>{S.breathe=!S.breathe;e.currentTarget.classList.toggle('on',S.breathe);};
 $('#t-sound').onclick=e=>{const on=Snd.set(!Snd.on);e.currentTarget.classList.toggle('on',on);toast(on?'🔔 Sound on':'🔕 Sound off');};
@@ -639,13 +643,13 @@ function setSleep(min){
   if(min)toast('😴 Fades to black in '+min+' min');else toast('Sleep timer off');
 }
 function cycleSleep(){const o=[0,10,20,30];setSleep(o[(o.indexOf(S.sleep)+1)%o.length]);}
-const wakeUp=()=>{if(sleepEnd&&Date.now()>sleepEnd)setSleep(0);};
+const wakeUp=e=>{if(sleepEnd&&Date.now()>sleepEnd){setSleep(0);if(e.type==='keydown')e.stopImmediatePropagation();}};
 addEventListener('pointerdown',wakeUp,true);addEventListener('keydown',wakeUp,true);
 
 let rec=null,recTimer=0;
 function toggleRec(){
   const btn=$('#b-rec');
-  if(rec){rec.stop();return;}
+  if(rec){if(rec.state!=='inactive'){clearInterval(recTimer);rec.stop();}return;}
   if(!window.MediaRecorder||!cv.captureStream){toast('Recording not supported here');return;}
   const stream=cv.captureStream(30);
   if(Snd.on&&Snd.dest)Snd.dest.stream.getAudioTracks().forEach(t=>stream.addTrack(t));
@@ -658,19 +662,27 @@ function toggleRec(){
     a.download='kaleidoscope-'+Date.now()+(type.includes('mp4')?'.mp4':'.webm');a.click();setTimeout(()=>URL.revokeObjectURL(a.href),8000);toast('🎬 Clip saved');
   };
   const t0=Date.now();r.start(500);btn.classList.add('rec');btn.textContent='0s';
-  recTimer=setInterval(()=>{const sec=Math.floor((Date.now()-t0)/1000);btn.textContent=sec+'s';if(sec>=30)r.stop();},250);
+  recTimer=setInterval(()=>{const sec=Math.floor((Date.now()-t0)/1000);btn.textContent=sec+'s';if(sec>=30&&r.state!=='inactive'){clearInterval(recTimer);r.stop();}},250);
   toast('⏺ Recording — press again to stop (30s max)');
 }
-function toggleFull(){try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}catch(e){}}
-function save(){render();cv.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='kaleidoscope-'+Date.now()+'.png';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000);});toast('💾 Saved');}
+function toggleFull(){
+  const d=document,el=d.documentElement;
+  try{
+    const p=(d.fullscreenElement||d.webkitFullscreenElement)?(d.exitFullscreen||d.webkitExitFullscreen).call(d)
+      :(el.requestFullscreen||el.webkitRequestFullscreen).call(el);
+    if(p&&p.catch)p.catch(()=>toast('Fullscreen not available'));
+  }catch(e){toast('Fullscreen not available');}
+}
+function save(){render();cv.toBlob(b=>{if(!b){toast('Could not save');return;}const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='kaleidoscope-'+Date.now()+'.png';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000);toast('💾 Saved');});}
 function unhide(){if(S.uiHidden){S.uiHidden=false;document.body.classList.remove('uihidden');}}
 cv.addEventListener('dblclick',unhide);
 
 addEventListener('keydown',e=>{
-  if(e.target.tagName==='INPUT'&&e.key.startsWith('Arrow')&&(e.key==='ArrowLeft'||e.key==='ArrowRight'))return;
-  wake();const k=e.key.toLowerCase();
+  if(e.ctrlKey||e.metaKey||e.altKey)return;
+  if(e.target.tagName==='INPUT'&&e.key.startsWith('Arrow'))return;
+  const k=e.key.toLowerCase();if(e.repeat&&!k.startsWith('arrow'))return;wake();
   if(k==='h'){S.uiHidden=!S.uiHidden;document.body.classList.toggle('uihidden',S.uiHidden);}
-  else if(k==='1')setMode('paint');else if(k==='2')setMode('tumble');else if(k==='3')setMode('flow');else if(k==='4')setMode('bloom');else if(k==='5')setMode('photo');
+  else if(k>='1'&&k<='5'){if(S.show)setShow(false);setMode(['tumble','paint','flow','bloom','photo'][+k-1]);}
   else if(k==='v')toggleRec();else if(k==='g')$('#t-guide').click();else if(k==='t')cycleSleep();
   else if(k==='z'||k===' '){e.preventDefault();setShow(!S.show);}
   else if(k==='arrowright')setN(S.n+2,true);else if(k==='arrowleft')setN(S.n-2,true);
@@ -717,7 +729,7 @@ setZoom(S.zoom);setSrcT();initGhosts();
 // a little welcome mandala so the screen is alive before the first touch
 for(let i=0;i<5;i++){const br=newBrush();br.ct=i*.2;const a=rand(0,TAU),r=rand(60,Math.min(W,H)*.4);
   for(let s=0;s<40;s++){const t=s/40;strokeTo(br,Math.cos(a+t*2.4)*r*(.4+t),Math.sin(a+t*2.4)*r*(.4+t),20-t*10);}}
-setMode('tumble',{silent:true,force:true});
+setMode('tumble',{silent:true,force:true,keepSrc:true});
 requestAnimationFrame(frame);
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 })();
