@@ -275,7 +275,7 @@ function updFlow(dt){
 }
 
 /* ---------- Bloom: growing mandala shapes ---------- */
-const blooms=[];let bloomT=0;
+const blooms=[],BLOOM_INK=.28;let bloomT=0;
 function spawnBloom(dx,dy,big){
   let x,y;
   if(dx===undefined){ // random inside wedge
@@ -288,8 +288,8 @@ function spawnBloom(dx,dy,big){
   if(blooms.length>60)blooms.shift();
   Snd.note(Math.hypot(x,y)/Rv(),.07);
 }
-function drawBloom(b){
-  const p=b.age/b.life,e=1-Math.pow(1-p,3),a=Math.pow(Math.sin(Math.PI*p),.7),size=b.max*e,g=sctx,c=palAt(b.ct);
+function drawBloom(b,k){ // k scales the per-frame ink so brightness doesn't depend on refresh rate
+  const p=b.age/b.life,e=1-Math.pow(1-p,3),a=k*Math.pow(Math.sin(Math.PI*p),.7),size=b.max*e,g=sctx,c=palAt(b.ct);
   g.save();g.globalCompositeOperation='lighter';g.translate(b.x,b.y);g.rotate(b.rot+b.spin*b.age);
   g.strokeStyle=rgba(c,a*.9,40);g.fillStyle=rgba(c,a*.16);g.lineWidth=1.5+(1-p)*6;
   if(b.kind===0){g.beginPath();g.arc(0,0,size,0,TAU);g.stroke();g.beginPath();g.arc(0,0,size*.6,0,TAU);g.fill();}
@@ -301,7 +301,8 @@ function drawBloom(b){
 }
 function updBloom(dt){
   bloomT-=dt;if(bloomT<0){bloomT=rand(.35,.9);spawnBloom();}
-  for(let i=blooms.length-1;i>=0;i--){const b=blooms[i];b.age+=dt;if(b.age>=b.life){blooms.splice(i,1);continue;}drawBloom(b);}
+  const k=BLOOM_INK*dt*60;
+  for(let i=blooms.length-1;i>=0;i--){const b=blooms[i];b.age+=dt;if(b.age>=b.life){blooms.splice(i,1);continue;}drawBloom(b,k);}
 }
 
 /* ---------- Tumble: gems in the tube ---------- */
