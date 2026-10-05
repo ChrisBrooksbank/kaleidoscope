@@ -12,6 +12,29 @@ No build step and no dependencies. It's one HTML file that also works offline as
 
 ---
 
+## 📜 Once upon a time…
+
+<div align="center">
+<img src="media/cosy-evening.png" alt="Illustration: a cosy 1970s living room on a snowy evening. A child on a striped rug looks through a brass kaleidoscope toward the lamp, a little sibling reaches for their turn, grandma knits in a green armchair, a cat sleeps by the fire, and a glowing mandala floats above, showing what the child sees." width="820">
+<br><sub><i>Snow on the window, the fire crackling, and whose turn is it next?</i></sub>
+</div>
+
+<br>
+
+Think of a winter afternoon. The fire is lit, grandma's needles are clicking, the cat is asleep on the hearth rug, and there's an argument about whose turn it is with **the kaleidoscope**. You hold it up to the lamp, close one eye and turn the end very slowly. Then *click*: a whole cathedral window falls apart and builds itself again into something you'll never see twice.
+
+### A little history
+
+In **1816** the Scottish physicist **Sir David Brewster** was experimenting with how light reflects between angled mirrors. He noticed that a few scraps of coloured glass, seen between two mirrors set at just the right angle, turned into perfectly symmetrical patterns. He patented the device in **1817** and named it from three Greek words:
+
+> **kalos** (beautiful) + **eidos** (form) + **skopeō** (to look at): *"a beautiful-form watcher."*
+
+Brewster imagined it as a tool for designers and carpet-makers. The public had other plans. Within months it was a **craze**, and by Brewster's own account around 200,000 sold in London and Paris in just a few months. Copycats flooded the market, so Brewster made very little from his invention, but the kaleidoscope had found its way into everyone's home.
+
+The Victorians made it furniture. In the 1870s **Charles Bush** of Boston built grand parlour kaleidoscopes on turned brass stands, with glass ampoules full of liquid so the pieces drifted slowly instead of tumbling. A century later it had shrunk into the **cardboard tube** you'd find in a Christmas stocking, win at the school fair or get from a seaside gift shop, with its paper peeling and its beads rattling, and it was precious all the same.
+
+Every kaleidoscope works the same way: **mirrors, a few loose bits of colour, and a hand to turn it.** This app keeps all three. The mirrors are maths, the beads are pixels, and the hand is still yours.
+
 ## ✨ Why it's fun
 
 Remember holding a cardboard tube up to the window and turning it slowly? This is that toy, rebuilt for screens. Every stroke, bead and flower is drawn into one wedge and reflected through up to 32 mirrors. Whatever you do turns into a symmetrical pattern, in a 1970s brass-and-orange case.
@@ -88,6 +111,17 @@ The repo is set up for **Netlify** (`netlify.toml` publishes the root folder and
 | Record a clip | ⏺ | <kbd>V</kbd> |
 | Fullscreen | ⛶ | <kbd>F</kbd> |
 | Hide / show controls | 👁, double-tap to bring back | <kbd>H</kbd> |
+
+## 🛠️ How it came to be
+
+This started as a small evening project: could a web page *feel* like the toy from the bottom of the toy box, and not just look like it?
+
+1. **First light.** The first version had the core trick: one wedge of drawing, mirrored around a circle. It came with four ways to fill it: tumbling **beads**, free **paint**, self-drawing **flow** and growing **blooms**. A **zen show** let it play by itself. The look was 70s brass, burnt orange and avocado green from the start, with film grain and a vignette to make it feel like peering down a real tube.
+2. **Filling the screen.** Fullscreen then learned to drop the brass case and every button, so the pattern could fill a TV or a tablet propped up on the mantelpiece.
+3. **The hand-turned tube.** The big update made it feel physical. You can grab the knurled ring and *turn* it, flick it to spin, and hear the little wooden tick. Alongside that came **photo and camera mode** (so the family can be *inside* the kaleidoscope), clip recording, a gentle **breath guide** and **sleep timer** for bedtime wind-downs, music that follows a slow chord progression, and an installable offline app.
+4. **Polish.** Three rounds of bug hunting then smoothed off the rough edges, from a stray dark dot in the very centre of every pattern to blooms that glowed themselves white.
+
+It's still one HTML file with no frameworks and no build step. You can open it, read it, and change it, the same way you might have unscrewed the end of a cardboard kaleidoscope to see what was really inside. (Everyone did that. Nobody ever got it back together.)
 
 ## 🔬 How it works
 
