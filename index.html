@@ -633,7 +633,7 @@ addEventListener('drop',e=>{e.preventDefault();const f=e.dataTransfer&&e.dataTra
 $('#t-guide').onclick=e=>{S.guide=!S.guide;e.currentTarget.classList.toggle('on',S.guide);if(!S.guide)Snd.padBase();toast(S.guide?'🌬️ Breathe with the ring':'Guide off');};
 $('#t-sleep').onclick=cycleSleep;
 $('#b-rec').onclick=toggleRec;
-document.querySelectorAll('#dock [data-mode]').forEach(b=>b.onclick=()=>{if(S.show)setShow(false);setMode(b.dataset.mode);});
+document.querySelectorAll('#dock [data-mode]').forEach(b=>b.onclick=()=>{hideHint();if(S.show)setShow(false);setMode(b.dataset.mode);});
 $('#zenbtn').onclick=()=>setShow(!S.show);
 $('#b-panel').onclick=()=>{const o=$('#panel').classList.toggle('open');$('#b-panel').classList.toggle('on',o);wake();};
 $('#b-rand').onclick=surprise;
