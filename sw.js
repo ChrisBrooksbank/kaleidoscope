@@ -1,5 +1,5 @@
 // Kaleidoscope service worker: works offline after the first visit.
-const CACHE = 'kaleidoscope-v1';
+const CACHE = 'kaleidoscope-v2';
 const CORE = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-maskable-512.png'];
 
 self.addEventListener('install', e => {
@@ -23,8 +23,11 @@ self.addEventListener('fetch', e => {
   // Pages: network first so updates arrive, cache as the offline fallback.
   if (req.mode === 'navigate') {
     e.respondWith(
-      fetch(req).then(res => { const copy = res.clone(); caches.open(CACHE).then(c => c.put('index.html', copy)); return res; })
-        .catch(() => caches.match('index.html'))
+      fetch(req).then(res => {
+        if (res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put('index.html', copy)); }
+        return res;
+      })
+        .catch(() => caches.match('index.html').then(hit => hit || Response.error()))
     );
     return;
   }
@@ -34,7 +37,7 @@ self.addEventListener('fetch', e => {
       const net = fetch(req).then(res => {
         if (res.ok || res.type === 'opaque') { const copy = res.clone(); caches.open(CACHE).then(c => c.put(req, copy)); }
         return res;
-      }).catch(() => hit);
+      }).catch(() => hit || Response.error());
       return hit || net;
     })
   );

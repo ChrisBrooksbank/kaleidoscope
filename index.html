@@ -31,11 +31,10 @@
   @keyframes recp{50%{box-shadow:0 0 0 6px rgba(193,18,31,.35)}}
   body.sleeping .ui,body.sleeping #toast{opacity:0!important;pointer-events:none}
   #vig{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 55%,rgba(20,8,0,.55) 100%)}
-  body.idle{cursor:none} body.idle #c{cursor:none}
+  body.idle{cursor:none} body.idle #c{cursor:none!important}
 
   .ui{transition:opacity .6s ease,transform .6s ease}
   body.idle .ui,body.uihidden .ui{opacity:0;pointer-events:none}
-  body.uihidden #reveal{opacity:.0}
 
   #dock{position:fixed;left:50%;bottom:max(14px,env(safe-area-inset-bottom));transform:translateX(-50%);
     display:flex;gap:8px;padding:8px;border-radius:26px;background:var(--glass);border:2px solid var(--line);
@@ -45,7 +44,7 @@
     font:inherit;font-weight:600;padding:9px 14px;border-radius:18px;cursor:pointer;display:flex;flex-direction:column;
     align-items:center;gap:2px;min-width:64px;transition:background .2s,transform .15s,box-shadow .2s}
   .btn .i{font-size:22px;line-height:1}
-  .btn .l{font-size:11px;color:var(--dim);letter-spacing:.02em}
+  .btn .l{font-size:11px;color:var(--dim);letter-spacing:.02em;white-space:nowrap}
   .btn:hover{background:rgba(255,255,255,.13)} .btn:active{transform:scale(.94)}
   .btn.on{background:linear-gradient(180deg,#f3a712,#e4572e);border-color:#ffe7b0;color:#2a160a;box-shadow:0 3px 0 #7a2a10}
   .btn.on .l{color:#2a160a;font-weight:600}
@@ -80,14 +79,14 @@
   .help{margin-top:12px;color:var(--dim);font-size:11.5px;line-height:1.6}
   kbd{background:rgba(255,255,255,.1);border-radius:5px;padding:1px 6px;font:inherit;font-size:11px;color:var(--txt)}
 
-  #toast{position:fixed;left:50%;top:18%;transform:translateX(-50%);padding:10px 20px;border-radius:24px;font-size:20px;font-weight:700;
+  #toast{position:fixed;left:50%;top:18%;transform:translateX(-50%);width:max-content;max-width:calc(100vw - 32px);text-align:center;padding:10px 20px;border-radius:24px;font-size:20px;font-weight:700;
     letter-spacing:.06em;background:rgba(10,8,20,.5);border:1px solid var(--line);backdrop-filter:blur(10px);opacity:0;
     transition:opacity .5s;pointer-events:none;text-shadow:2px 2px 0 #e4572e;font-family:"Shrikhand",Georgia,serif}
   #toast.show{opacity:1}
-  #hint{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;
+  #hint{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:max-content;max-width:calc(100vw - 32px);text-align:center;pointer-events:none;
     font-size:clamp(20px,4vw,34px);font-weight:300;letter-spacing:.08em;color:rgba(255,255,255,.85);text-shadow:3px 3px 0 #e4572e;font-family:"Shrikhand",Georgia,serif;
     transition:opacity 1.5s;animation:pulse 3s ease-in-out infinite}
-  #hint small{display:block;margin-top:10px;font-size:.45em;color:var(--dim);letter-spacing:.14em}
+  #hint small{display:block;margin-top:10px;font-size:.45em;color:var(--dim);letter-spacing:.14em;text-shadow:1px 1px 0 rgba(0,0,0,.7)}
   #hint.gone{opacity:0}
   @keyframes pulse{50%{transform:translate(-50%,-50%) scale(1.04)}}
   @media (max-width:520px){ .btn{min-width:54px;padding:8px 9px} .row{grid-template-columns:78px 1fr 34px} #title{display:none} }
@@ -111,11 +110,11 @@
 </div>
 
 <div id="panel" class="ui">
-  <div class="row"><label>Mirrors</label><input type="range" id="r-n" min="4" max="32" step="2"><output id="o-n"></output></div>
-  <div class="row"><label>Brush size</label><input type="range" id="r-size" min="6" max="90"><output id="o-size"></output></div>
-  <div class="row"><label>Trails</label><input type="range" id="r-trail" min="0" max="100"><output id="o-trail"></output></div>
-  <div class="row"><label>Spin</label><input type="range" id="r-spin" min="-100" max="100"><output id="o-spin"></output></div>
-  <div class="row"><label>Photo zoom</label><input type="range" id="r-zoom" min="40" max="240"><output id="o-zoom"></output></div>
+  <div class="row"><label for="r-n">Mirrors</label><input type="range" id="r-n" min="4" max="32" step="2"><output id="o-n"></output></div>
+  <div class="row"><label for="r-size">Brush size</label><input type="range" id="r-size" min="6" max="90"><output id="o-size"></output></div>
+  <div class="row"><label for="r-trail">Trails</label><input type="range" id="r-trail" min="0" max="100"><output id="o-trail"></output></div>
+  <div class="row"><label for="r-spin">Spin</label><input type="range" id="r-spin" min="-100" max="100"><output id="o-spin"></output></div>
+  <div class="row"><label for="r-zoom">Photo zoom</label><input type="range" id="r-zoom" min="40" max="240"><output id="o-zoom"></output></div>
   <div class="chips" id="pals"><span class="h">COLOURS</span></div>
   <div class="chips" id="brushes"><span class="h">BRUSH</span></div>
   <div class="toggles">
@@ -131,11 +130,11 @@
   </div>
   <input type="file" id="file" accept="image/*" hidden>
   <div class="help">
-    Draw with mouse, finger — or several fingers at once. In <b>Tumble</b> hold to attract the gems; in <b>Bloom</b> tap to plant flowers;
+    Draw with mouse, finger — or several fingers at once. In <b>Beads</b> hold to attract the gems; in <b>Bloom</b> tap to plant flowers;
     in <b>Flow</b> ghost painters swirl by themselves and lean toward your pointer.<br>
     <b>Twist the brass ring</b> (or Shift-drag) to turn the tube — flick it to spin. Drop a photo anywhere to mirror it.<br>
     <kbd>1</kbd>–<kbd>5</kbd> modes · <kbd>Z</kbd> zen show · <kbd>←</kbd><kbd>→</kbd>/wheel mirrors · <kbd>↑</kbd><kbd>↓</kbd> brush ·
-    <kbd>P</kbd> colours · <kbd>B</kbd> brush · <kbd>R</kbd> surprise · <kbd>S</kbd> save · <kbd>V</kbd> record · <kbd>G</kbd> breath guide · <kbd>T</kbd> sleep timer · <kbd>H</kbd> hide controls
+    <kbd>P</kbd> colours · <kbd>B</kbd> brush · <kbd>R</kbd> surprise · <kbd>S</kbd> save · <kbd>V</kbd> record · <kbd>M</kbd> sound · <kbd>G</kbd> breath guide · <kbd>T</kbd> sleep timer · <kbd>H</kbd> hide controls
   </div>
 </div>
 
@@ -268,7 +267,7 @@ function updFlow(dt){
     g.m+=dt*.05;const sp=1+.35*Math.sin(g.m*3+i);
     for(let k=0;k<4;k++)g.p[k]+=g.f[k]*sp*dt*(k%2?1.3:1);
     let x=A*(.85*Math.sin(g.p[0])+.5*Math.sin(g.p[1]+g.m)),y=A*(.85*Math.sin(g.p[2])+.5*Math.sin(g.p[3]-g.m));
-    if(ptr){const px=ptr.x-W/2,py=ptr.y-H/2;x+=(px-x)*attract*(.4+.3*i);y+=(py-y)*attract*(.4+.3*i);}
+    if(ptr){const [px,py]=rel(ptr.x,ptr.y);x+=(px-x)*attract*(.4+.3*i);y+=(py-y)*attract*(.4+.3*i);}
     const size=S.size*(.65+.45*Math.sin(g.m*5+i*2));
     strokeTo(g.br,x,y,size);
     g.sndT-=dt;if(g.sndT<0){g.sndT=rand(1.2,2.6);Snd.note(Math.hypot(x,y)/Rv(),.05);}
@@ -276,7 +275,7 @@ function updFlow(dt){
 }
 
 /* ---------- Bloom: growing mandala shapes ---------- */
-const blooms=[];let bloomT=0;
+const blooms=[],BLOOM_INK=.28;let bloomT=0;
 function spawnBloom(dx,dy,big){
   let x,y;
   if(dx===undefined){ // random inside wedge
@@ -289,8 +288,8 @@ function spawnBloom(dx,dy,big){
   if(blooms.length>60)blooms.shift();
   Snd.note(Math.hypot(x,y)/Rv(),.07);
 }
-function drawBloom(b){
-  const p=b.age/b.life,e=1-Math.pow(1-p,3),a=Math.pow(Math.sin(Math.PI*p),.7),size=b.max*e,g=sctx,c=palAt(b.ct);
+function drawBloom(b,k){ // k scales the per-frame ink so brightness doesn't depend on refresh rate
+  const p=b.age/b.life,e=1-Math.pow(1-p,3),a=k*Math.pow(Math.sin(Math.PI*p),.7),size=b.max*e,g=sctx,c=palAt(b.ct);
   g.save();g.globalCompositeOperation='lighter';g.translate(b.x,b.y);g.rotate(b.rot+b.spin*b.age);
   g.strokeStyle=rgba(c,a*.9,40);g.fillStyle=rgba(c,a*.16);g.lineWidth=1.5+(1-p)*6;
   if(b.kind===0){g.beginPath();g.arc(0,0,size,0,TAU);g.stroke();g.beginPath();g.arc(0,0,size*.6,0,TAU);g.fill();}
@@ -302,7 +301,8 @@ function drawBloom(b){
 }
 function updBloom(dt){
   bloomT-=dt;if(bloomT<0){bloomT=rand(.35,.9);spawnBloom();}
-  for(let i=blooms.length-1;i>=0;i--){const b=blooms[i];b.age+=dt;if(b.age>=b.life){blooms.splice(i,1);continue;}drawBloom(b);}
+  const k=BLOOM_INK*dt*60;
+  for(let i=blooms.length-1;i>=0;i--){const b=blooms[i];b.age+=dt;if(b.age>=b.life){blooms.splice(i,1);continue;}drawBloom(b,k);}
 }
 
 /* ---------- Tumble: gems in the tube ---------- */
@@ -316,7 +316,7 @@ function newGem(x,y){
 function initGems(){gems.length=0;for(let i=0;i<34;i++)gems.push(newGem());}
 function updGems(dt){
   const w=TAU/S.n,rv=Rv(),ga=Math.PI/2-viewRot+.6*Math.sin(time*.3),gx=Math.cos(ga)*170,gy=Math.sin(ga)*170;
-  const pulls=[];for(const p of ptrs.values())if(p.down&&!p.turn){const f=fold(p.x-W/2,p.y-H/2);pulls.push(f);}
+  const pulls=[];for(const p of ptrs.values())if(p.down&&!p.turn){const [dx,dy]=rel(p.x,p.y);pulls.push(fold(dx,dy));}
   for(let i=0;i<gems.length;i++)for(let j=i+1;j<gems.length;j++){
     const a=gems[i],b=gems[j],dx=b.x-a.x,dy=b.y-a.y,rr=(a.size+b.size)*.6,d2=dx*dx+dy*dy;
     if(d2<rr*rr&&d2>.01){
@@ -385,19 +385,23 @@ function stopCam(){
   if(photo.el&&photo.el.tagName==='VIDEO'){photo.el=null;photo.user=false;photo.mirror=false;}
   $('#t-cam').classList.remove('on');
 }
+let camBusy=false;
 async function toggleCam(){
+  if(camBusy)return;
   if(photo.cam){stopCam();if(S.mode==='photo'){photo.el=makeSample();}toast('📷 Camera off');return;}
+  camBusy=true;
   try{
     const st=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:1280}},audio:false});
     const v=document.createElement('video');v.srcObject=st;v.muted=true;v.playsInline=true;await v.play();
     photo.el=v;photo.cam=st;photo.user=true;photo.mirror=true;$('#t-cam').classList.add('on');setMode('photo',{silent:true});toast('📷 You are the kaleidoscope!');
   }catch(e){toast('Camera not available');}
+  finally{camBusy=false;}
 }
 function loadFile(f){
   if(!f||!f.type.startsWith('image/')){toast('Please choose an image');return;}
   const img=new Image(),url=URL.createObjectURL(f);
-  img.onload=()=>{stopCam();photo.el=img;photo.user=true;photo.mirror=false;panX=panY=0;setMode('photo',{silent:true,force:true});toast('🖼️ Photo loaded');};
-  img.onerror=()=>toast('Could not read that image');img.src=url;
+  img.onload=()=>{URL.revokeObjectURL(url);stopCam();photo.el=img;photo.user=true;photo.mirror=false;panX=panY=0;setMode('photo',{silent:true,force:true});toast('🖼️ Photo loaded');};
+  img.onerror=()=>{URL.revokeObjectURL(url);toast('Could not read that image');};img.src=url;
 }
 
 /* ---------- render ---------- */
@@ -438,11 +442,12 @@ function render(){
   if(S.lens){ctx.beginPath();ctx.arc(W/2,H/2,Rl,0,TAU);ctx.clip();ctx.fillStyle='#0a0503';ctx.fillRect(0,0,W,H);}
   ctx.translate(W/2,H/2);
   viewScale=S.guide?1+.05*breathP:S.breathe?1.04+.06*Math.sin(time*.4)+.02*Math.sin(time*1.1):1;ctx.scale(viewScale,viewScale);
-  const sw=src.width,sh=Math.min(src.height,Math.ceil(R*Math.sin(w)*K)+8),eps=.005;
+  // apex pulled back a few px so neighbouring wedges overlap at the centre instead of leaving an anti-aliased dark dot
+  const sw=src.width,sh=Math.min(src.height,Math.ceil(R*Math.sin(w)*K)+8),eps=.005,ax=-3*Math.cos(w/2),ay=-3*Math.sin(w/2);
   for(let i=0;i<N;i++){
     ctx.save();
     if(i%2===0)ctx.rotate(viewRot+i*w);else{ctx.rotate(viewRot+(i+1)*w);ctx.scale(1,-1);}
-    ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,R,-eps,w+eps);ctx.closePath();ctx.clip();
+    ctx.beginPath();ctx.moveTo(ax,ay);ctx.arc(0,0,R,-eps,w+eps);ctx.closePath();ctx.clip();
     ctx.drawImage(src,0,0,sw,sh,0,-3/K,sw/K,sh/K);
     ctx.restore();
   }
@@ -471,12 +476,13 @@ function crossfade(ms){
 }
 
 /* ---------- input ---------- */
-const ptrs=new Map();let lastMoveT=-99,lastBloomT=0,lastPid=null;
+const ptrs=new Map();let lastMoveT=-99,lastBloomT=0,lastPid=null;let lastTap={t:0,x:0,y:0};
 const lastPointer=()=>ptrs.get(lastPid)||[...ptrs.values()].pop();
 const rel=(x,y)=>[(x-W/2)/viewScale,(y-H/2)/viewScale];
 const ringR=()=>Math.min(W,H)*.48;
 cv.addEventListener('pointerdown',e=>{
   cv.setPointerCapture(e.pointerId);hideHint();wake();
+  if(S.uiHidden&&e.pointerType!=='mouse'){if(e.timeStamp-lastTap.t<350&&Math.hypot(e.clientX-lastTap.x,e.clientY-lastTap.y)<40)unhide();lastTap={t:e.timeStamp,x:e.clientX,y:e.clientY};}
   const p={x:e.clientX,y:e.clientY,down:true,br:newBrush(),turn:false,av:0};ptrs.set(e.pointerId,p);lastPid=e.pointerId;lastMoveT=time;
   const sx=e.clientX-W/2,sy=e.clientY-H/2;
   if((S.lens&&Math.hypot(sx,sy)>ringR())||e.shiftKey||e.button===2){
@@ -490,13 +496,16 @@ cv.addEventListener('pointerdown',e=>{
 cv.addEventListener('pointermove',e=>{
   wake();const p=ptrs.get(e.pointerId)||{down:false,br:newBrush(),turn:false,av:0};const ox=p.x,oy=p.y;p.x=e.clientX;p.y=e.clientY;
   if(e.pointerType==='mouse'||p.down)ptrs.set(e.pointerId,p);lastPid=e.pointerId;lastMoveT=time;
+  if(p.down&&e.pointerType==='mouse'&&e.buttons===0){up(e);return;}
   if(!p.down){if(e.pointerType==='mouse')cv.style.cursor=(S.lens&&Math.hypot(p.x-W/2,p.y-H/2)>ringR())?'grab':'crosshair';return;}
   if(p.turn){
     const ang=Math.atan2(p.y-H/2,p.x-W/2);let d=ang-p.la;if(d>Math.PI)d-=TAU;if(d<-Math.PI)d+=TAU;p.la=ang;viewRot+=d;
     const dtm=Math.max(.008,(e.timeStamp-p.lt)/1000);p.lt=e.timeStamp;p.av+=(d/dtm-p.av)*.4;
     turnAcc+=Math.abs(d);if(turnAcc>.16){turnAcc=0;Snd.click();}return;
   }
-  if(S.mode==='photo'){panX+=(p.x-ox)/viewScale;panY+=(p.y-oy)/viewScale;return;}
+  if(S.mode==='photo'){ // drag the picture, but never so far it leaves the middle of the tube empty
+    panX+=(p.x-ox)/viewScale;panY+=(p.y-oy)/viewScale;
+    const lim=Rv()*.65*S.zoom/100*.5,d=Math.hypot(panX,panY);if(d>lim){panX*=lim/d;panY*=lim/d;}return;}
   const [dx,dy]=rel(p.x,p.y);
   if(S.mode==='paint'||S.mode==='flow')strokeTo(p.br,dx,dy,S.size);
   else if(S.mode==='bloom'&&time-lastBloomT>.09){lastBloomT=time;spawnBloom(dx,dy,false);}
@@ -509,7 +518,9 @@ const up=e=>{
 cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
 cv.addEventListener('pointerleave',e=>{if(e.pointerType==='mouse'&&!ptrs.get(e.pointerId)?.down)ptrs.delete(e.pointerId);});
 cv.addEventListener('contextmenu',e=>e.preventDefault());
-cv.addEventListener('wheel',e=>{e.preventDefault();setN(S.n+(e.deltaY<0?2:-2),true);},{passive:false});
+let wheelAcc=0;
+cv.addEventListener('wheel',e=>{e.preventDefault();wheelAcc+=e.deltaMode?e.deltaY*40:e.deltaY;
+  if(Math.abs(wheelAcc)>=80){setN(S.n+(wheelAcc<0?2:-2),true);wheelAcc=0;}},{passive:false});
 
 /* ---------- audio ---------- */
 const CH=[[0,0],[9,1],[5,0],[7,0]];   // D, Bm, G, A — [semitones above D, minor?]
@@ -575,7 +586,7 @@ function setMode(m,o={}){
   if(old==='photo'&&m!=='photo')stopCam();
   S.mode=m;const M=MODES[m];
   if(m==='photo'&&!photo.el)photo.el=makeSample();if(!o.keepTrail){setTrail(M.trail);}
-  if(!keep)clearSrc();
+  if(!keep&&!o.keepSrc)clearSrc();
   if(m==='tumble')initGems();if(m==='flow')initGhosts();if(m==='bloom'){blooms.length=0;bloomT=0;}
   document.querySelectorAll('#dock [data-mode]').forEach(b=>b.classList.toggle('on',b.dataset.mode===m));
   if(!o.silent)toast(m==='photo'&&!photo.user?'Photo · drop a picture here, or open Tweak':M.name);
@@ -589,7 +600,7 @@ function nextScene(){
   const m=pick(['flow','bloom','tumble','flow'].concat(photo.user?['photo']:[]).filter(x=>x!==S.mode));
   crossfade(2800);setMode(m,{ms:2800,silent:true});
   setN(pick([6,8,8,10,12,14,16,20]));setPal(S.pal+1+Math.floor(rand(0,PALS.length-1)));
-  setBrush(Math.floor(rand(0,BRUSHES.length)));setSpin(Math.round(rand(-30,30)||6));setSize(Math.round(rand(20,44)));
+  setBrush(Math.floor(rand(0,BRUSHES.length)));setSpin(Math.round(rand(-30,30))||6);setSize(Math.round(rand(20,44)));
   showT=rand(24,42);toast(MODES[m].name+' · '+PALS[S.pal].name);
   if(Snd.on)Snd.nextChord();
 }
@@ -622,13 +633,13 @@ addEventListener('drop',e=>{e.preventDefault();const f=e.dataTransfer&&e.dataTra
 $('#t-guide').onclick=e=>{S.guide=!S.guide;e.currentTarget.classList.toggle('on',S.guide);if(!S.guide)Snd.padBase();toast(S.guide?'🌬️ Breathe with the ring':'Guide off');};
 $('#t-sleep').onclick=cycleSleep;
 $('#b-rec').onclick=toggleRec;
-document.querySelectorAll('#dock [data-mode]').forEach(b=>b.onclick=()=>{if(S.show)setShow(false);setMode(b.dataset.mode);});
+document.querySelectorAll('#dock [data-mode]').forEach(b=>b.onclick=()=>{hideHint();if(S.show)setShow(false);setMode(b.dataset.mode);});
 $('#zenbtn').onclick=()=>setShow(!S.show);
 $('#b-panel').onclick=()=>{const o=$('#panel').classList.toggle('open');$('#b-panel').classList.toggle('on',o);wake();};
 $('#b-rand').onclick=surprise;
 $('#b-clear').onclick=()=>{crossfade(500);clearSrc();if(S.mode==='tumble')initGems();blooms.length=0;};
 $('#b-full').onclick=toggleFull;
-$('#b-hide').onclick=()=>{S.uiHidden=true;document.body.classList.add('uihidden');toast('Press H or tap to bring controls back');};
+$('#b-hide').onclick=()=>{S.uiHidden=true;document.body.classList.add('uihidden');toast('Press H or double-tap to bring controls back');};
 $('#t-lens').onclick=e=>{S.lens=!S.lens;e.currentTarget.classList.toggle('on',S.lens);};
 $('#t-breathe').onclick=e=>{S.breathe=!S.breathe;e.currentTarget.classList.toggle('on',S.breathe);};
 $('#t-sound').onclick=e=>{const on=Snd.set(!Snd.on);e.currentTarget.classList.toggle('on',on);toast(on?'🔔 Sound on':'🔕 Sound off');};
@@ -639,13 +650,13 @@ function setSleep(min){
   if(min)toast('😴 Fades to black in '+min+' min');else toast('Sleep timer off');
 }
 function cycleSleep(){const o=[0,10,20,30];setSleep(o[(o.indexOf(S.sleep)+1)%o.length]);}
-const wakeUp=()=>{if(sleepEnd&&Date.now()>sleepEnd)setSleep(0);};
+const wakeUp=e=>{if(sleepEnd&&Date.now()>sleepEnd){setSleep(0);if(e.type==='keydown')e.stopImmediatePropagation();}};
 addEventListener('pointerdown',wakeUp,true);addEventListener('keydown',wakeUp,true);
 
 let rec=null,recTimer=0;
 function toggleRec(){
   const btn=$('#b-rec');
-  if(rec){rec.stop();return;}
+  if(rec){if(rec.state!=='inactive'){clearInterval(recTimer);rec.stop();}return;}
   if(!window.MediaRecorder||!cv.captureStream){toast('Recording not supported here');return;}
   const stream=cv.captureStream(30);
   if(Snd.on&&Snd.dest)Snd.dest.stream.getAudioTracks().forEach(t=>stream.addTrack(t));
@@ -658,19 +669,27 @@ function toggleRec(){
     a.download='kaleidoscope-'+Date.now()+(type.includes('mp4')?'.mp4':'.webm');a.click();setTimeout(()=>URL.revokeObjectURL(a.href),8000);toast('🎬 Clip saved');
   };
   const t0=Date.now();r.start(500);btn.classList.add('rec');btn.textContent='0s';
-  recTimer=setInterval(()=>{const sec=Math.floor((Date.now()-t0)/1000);btn.textContent=sec+'s';if(sec>=30)r.stop();},250);
+  recTimer=setInterval(()=>{const sec=Math.floor((Date.now()-t0)/1000);btn.textContent=sec+'s';if(sec>=30&&r.state!=='inactive'){clearInterval(recTimer);r.stop();}},250);
   toast('⏺ Recording — press again to stop (30s max)');
 }
-function toggleFull(){try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}catch(e){}}
-function save(){render();cv.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='kaleidoscope-'+Date.now()+'.png';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000);});toast('💾 Saved');}
+function toggleFull(){
+  const d=document,el=d.documentElement;
+  try{
+    const p=(d.fullscreenElement||d.webkitFullscreenElement)?(d.exitFullscreen||d.webkitExitFullscreen).call(d)
+      :(el.requestFullscreen||el.webkitRequestFullscreen).call(el);
+    if(p&&p.catch)p.catch(()=>toast('Fullscreen not available'));
+  }catch(e){toast('Fullscreen not available');}
+}
+function save(){render();cv.toBlob(b=>{if(!b){toast('Could not save');return;}const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='kaleidoscope-'+Date.now()+'.png';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000);toast('💾 Saved');});}
 function unhide(){if(S.uiHidden){S.uiHidden=false;document.body.classList.remove('uihidden');}}
 cv.addEventListener('dblclick',unhide);
 
 addEventListener('keydown',e=>{
-  if(e.target.tagName==='INPUT'&&e.key.startsWith('Arrow')&&(e.key==='ArrowLeft'||e.key==='ArrowRight'))return;
-  wake();const k=e.key.toLowerCase();
+  if(e.ctrlKey||e.metaKey||e.altKey)return;
+  if(e.target.tagName==='INPUT'&&e.key.startsWith('Arrow'))return;
+  const k=e.key.toLowerCase();if(e.repeat&&!k.startsWith('arrow'))return;wake();hideHint();
   if(k==='h'){S.uiHidden=!S.uiHidden;document.body.classList.toggle('uihidden',S.uiHidden);}
-  else if(k==='1')setMode('paint');else if(k==='2')setMode('tumble');else if(k==='3')setMode('flow');else if(k==='4')setMode('bloom');else if(k==='5')setMode('photo');
+  else if(k>='1'&&k<='5'){if(S.show)setShow(false);setMode(['tumble','paint','flow','bloom','photo'][+k-1]);}
   else if(k==='v')toggleRec();else if(k==='g')$('#t-guide').click();else if(k==='t')cycleSleep();
   else if(k==='z'||k===' '){e.preventDefault();setShow(!S.show);}
   else if(k==='arrowright')setN(S.n+2,true);else if(k==='arrowleft')setN(S.n-2,true);
@@ -680,17 +699,18 @@ addEventListener('keydown',e=>{
   else if(k==='m')$('#t-sound').click();
 });
 addEventListener('resize',()=>{resize();});
-document.addEventListener('fullscreenchange',()=>{const fs=!!document.fullscreenElement;
+const onFull=()=>{const fs=!!(document.fullscreenElement||document.webkitFullscreenElement);
   S.uiHidden=fs;document.body.classList.toggle('uihidden',fs);
   if(fs){S.lensBefore=S.lens;S.lens=false;}else if(S.lensBefore!==undefined){S.lens=S.lensBefore;S.lensBefore=undefined;}
   $('#t-lens').classList.toggle('on',S.lens);crossfade(600);
-  if(fs){$('#panel').classList.remove('open');$('#b-panel').classList.remove('on');toast('Esc to exit · H or double-tap for controls');}});
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S.show)lock(true);});
+  if(fs){$('#panel').classList.remove('open');$('#b-panel').classList.remove('on');toast('Esc to exit · H or double-tap for controls');}};
+document.addEventListener('fullscreenchange',onFull);document.addEventListener('webkitfullscreenchange',onFull);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)return;if(S.show)lock(true);if(Snd.on&&Snd.ctx)Snd.ctx.resume();});
 
 /* ---------- main loop ---------- */
 let last=performance.now();
 function frame(now){
-  const dt=Math.min(.05,(now-last)/1000);last=now;time+=dt;hueT+=dt*.02;
+  const dt=clamp((now-last)/1000,0,.05);last=now;time+=dt;hueT+=dt*.02;
   const cyc=time%10,ez=x=>.5-.5*Math.cos(Math.PI*x);breathIn=cyc<4;breathP=breathIn?ez(cyc/4):1-ez((cyc-4)/6);
   if(sleepEnd){
     sleepK=clamp((Date.now()-sleepEnd)/60000,0,1);
@@ -717,7 +737,7 @@ setZoom(S.zoom);setSrcT();initGhosts();
 // a little welcome mandala so the screen is alive before the first touch
 for(let i=0;i<5;i++){const br=newBrush();br.ct=i*.2;const a=rand(0,TAU),r=rand(60,Math.min(W,H)*.4);
   for(let s=0;s<40;s++){const t=s/40;strokeTo(br,Math.cos(a+t*2.4)*r*(.4+t),Math.sin(a+t*2.4)*r*(.4+t),20-t*10);}}
-setMode('tumble',{silent:true,force:true});
+setMode('tumble',{silent:true,force:true,keepSrc:true});
 requestAnimationFrame(frame);
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 })();
