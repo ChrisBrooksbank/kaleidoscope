@@ -2,6 +2,8 @@
 
 # 🔭 Kaleidoscope
 
+**Live demo:** [kaleidoscope.netlify.app](https://kaleidoscope.netlify.app)
+
 **A retro brass-tube kaleidoscope you can play with: tumble glass beads, paint mandalas, grow flowers, mirror your own photos, or lie back and let it dream.**
 
 No build step and no dependencies. It's one HTML file that also works offline as an installable app.
